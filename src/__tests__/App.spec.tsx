@@ -6,7 +6,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Main, GET_POSTS } from "./../App";
 
 test("loads and displays header", async () => {
-  const mocks: any = [
+  const mocks = [
     {
       request: {
         query: GET_POSTS,
