@@ -14,7 +14,7 @@ import { gql } from "@apollo/client";
 
 //Get Posts Query
 
-export const GET_POSTS = gql`
+const GET_POSTS = gql`
   query Posts($options:PageQueryOptions  ) {
     posts(options: $options) {
       data {
@@ -33,7 +33,7 @@ export const GET_POSTS = gql`
 
 //Create Post Mutation
 
-export const CREATE_POST = gql`
+const CREATE_POST = gql`
   mutation CreatePost($input: CreatePostInput! ) {
     createPost(input: $input) {
         id
@@ -51,7 +51,7 @@ export const CREATE_POST = gql`
 
 //Update Post Mutation
 
-export const UPDATE_POST = gql`
+const UPDATE_POST = gql`
   mutation UpdatePost($id: ID! , $input: UpdatePostInput! ) {
     updatePost(id: $id, input: $input) {
         id
@@ -69,7 +69,7 @@ export const UPDATE_POST = gql`
 
 //Delete Post Mutation
 
-export const DELETE_POST = gql`
+const DELETE_POST = gql`
   mutation DeletePost($id: ID! ) {
     deletePost(id: $id)
   }
@@ -93,7 +93,7 @@ type CreatePostProps = {
   title: string;
   body: string;
 };
-export const PostItem = (props: { post: PostProps, key: number, onClick: () => void }) => (
+const PostItem = (props: { post: PostProps, key: number, onClick: () => void }) => (
   //use props.post.isNew to display the right post UI
   props.post.isNew ? <NewPostItem {...props} /> :
     <div onClick={() => props.onClick()} key={props.key} className={props.post.isSelected ? "bg-white rounded-md px-2 py-1 mt-4 border-2 border-rose" : "bg-white rounded-md px-2 py-1 mt-4"}>
