@@ -192,7 +192,6 @@ export const Main = () => {
       if (selectedPost) {
         updatePost({ variables: { id: selectedPost?.id, input: newPost } }).then((result) => {
           if (result.data.updatePost) {
-            console.log(result)
             setShowUpdateCreateModal(false);
             setIsUpdatingPost(false);
             const arrayOfPosts = [...posts];
@@ -208,7 +207,6 @@ export const Main = () => {
     //Create case
     else {
       createPost({ variables: { input: newPost } }).then((result) => {
-        console.log(result)
         if (result.data.createPost) {
           setShowUpdateCreateModal(false);
           const arrayOfPosts = [...posts];
