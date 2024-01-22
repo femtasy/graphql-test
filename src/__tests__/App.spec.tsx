@@ -3,10 +3,26 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 
-import { Main, GET_POSTS } from "./../App";
-
+import { Main } from "./../App";
+import gql from "graphql-tag";
+const GET_POSTS = gql`
+  query Posts($options:PageQueryOptions  ) {
+    posts(options: $options) {
+      data {
+        id
+        title
+        body
+        user {
+          id
+          name
+          email
+        }
+      }
+    }
+  }
+`;
 test("loads and displays header", async () => {
-  const mocks: any = [
+  const mocks = [
     {
       request: {
         query: GET_POSTS,
