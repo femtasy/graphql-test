@@ -11,8 +11,8 @@ import { Post } from "./__generated__/graphql";
 import { gql } from "@apollo/client";
 
 export const GET_POSTS = gql`
-  query Posts {
-    posts {
+  query Posts($options: PageQueryOptions) {
+    posts(options: $options) {
       data {
         id
         title
@@ -53,7 +53,24 @@ const NewPostItem = (post: Post) => (
 );
 
 export const Main = () => {
-  const { loading, error, data } = useQuery(GET_POSTS);
+  const { loading, error, data } = useQuery(GET_POSTS, {variables: {
+    //all these could be a custom hook in ./utils
+    //variables should be parsed
+    //page must be controled by user.
+    //get only 10 results
+    "options": {
+      "paginate": {
+        "page": 1,
+        "limit": 10
+      },
+      //sort desc order by id
+      "sort": {
+        "field": "id",
+        "order": "DESC"
+      }
+    }
+  }});
+  console.log(data)
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
