@@ -52,6 +52,13 @@ const UPDATE_POST = gql`
   }
 `;
 
+//delete post
+const DELETE_POST = gql`
+  mutation ($id: ID!) {
+    deletePost(id: $id)
+  }
+`;
+
 const client = new ApolloClient({
   uri: "https://graphqlzero.almansi.me/api",
   cache: new InMemoryCache(),
@@ -80,6 +87,8 @@ const NewPostItem = (post: Post) => (
 
 export const Main = () => {
   const [showUpdateSuccess, setShowUpdateSuccess] = useState<boolean>(false);
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState<boolean>(false);
+
   const { loading, error, data } = useQuery(GET_POSTS, {
     variables: {
       //all these could be a custom hook in ./utils
@@ -125,6 +134,22 @@ export const Main = () => {
     },
   });
 
+  const [
+    deletePost,
+    {
+      //data: delete_post_response,
+      loading: delete_post_loading,
+      error: delete_post_error,
+    },
+  ] = useMutation(DELETE_POST, {
+    onCompleted: () => {
+      setShowDeleteSuccess(true);
+      setTimeout(() => {
+        setShowDeleteSuccess(false);
+      }, 4000); // Display the message for 4 seconds
+    },
+  });
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
 
@@ -139,6 +164,7 @@ export const Main = () => {
       <main className="flex-grow overflow-auto flex-col-reverse bg-body">
         <div className="px-4 py-4">
           {update_post_error && "Error: couldn't update post. Try again later"}
+          {delete_post_error && "Error: couldn't delete post. Try again later"}
           {showUpdateSuccess && (
             <div className="bg-[#D1FFBD] rounded-md px-2 py-1 mt-4">
               <p className="text-dark-body text-sm m-0">
@@ -146,6 +172,15 @@ export const Main = () => {
               </p>
             </div>
           )}
+
+          {showDeleteSuccess && (
+            <div className="bg-[#D1FFBD] rounded-md px-2 py-1 mt-4">
+              <p className="text-dark-body text-sm m-0">
+                Post successfully deleted ✅
+              </p>
+            </div>
+          )}
+
           {create_post_error //display created post if there's no error and is not loading
             ? "Error: couldn't create new post"
             : !create_post_loading &&
@@ -203,9 +238,15 @@ export const Main = () => {
           </div>
           <div>
             <button
-              className="bg-white text-dark-body text-sm px-4 py-2 border-light-body border-2 border-solid rounded-xl"
+              disabled={delete_post_loading}
+              className={`bg-white text-dark-body text-sm px-4 py-2 border-light-body border-2 border-solid rounded-xl
+               ${delete_post_loading && "opacity-30"}`}
               onClick={() => {
-                console.log("Delete");
+                deletePost({
+                  variables: {
+                    id: "101",
+                  },
+                });
               }}
             >
               Delete post
