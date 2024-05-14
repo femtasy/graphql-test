@@ -57,11 +57,12 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-type Post = {
-  id: number;
-  title: string;
-  body: string;
-};
+//not needed since we're importing type from ./__generated__/graphql
+// type Post = {
+//   id: number;
+//   title: string;
+//   body: string;
+// };
 
 export const PostItem = (post: Post) => (
   <div className="bg-white rounded-md px-2 py-1 mt-4">
