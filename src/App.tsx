@@ -1,75 +1,19 @@
 import { useState } from "react";
 
 import "./App.css";
-import {
-  ApolloClient,
-  ApolloProvider,
-  InMemoryCache,
-  useQuery,
-  useMutation,
-} from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
 import { Post } from "./__generated__/graphql";
 
-import { gql } from "@apollo/client";
-
-//get post
-const GET_POSTS = gql`
-  query Posts($options: PageQueryOptions) {
-    posts(options: $options) {
-      data {
-        id
-        title
-        body
-        user {
-          id
-          name
-          email
-        }
-      }
-    }
-  }
-`;
-
-//create post
-const CREATE_POST = gql`
-  mutation ($input: CreatePostInput!) {
-    createPost(input: $input) {
-      id
-      title
-      body
-    }
-  }
-`;
-
-//update post
-const UPDATE_POST = gql`
-  mutation ($id: ID!, $input: UpdatePostInput!) {
-    updatePost(id: $id, input: $input) {
-      id
-      body
-    }
-  }
-`;
-
-//delete post
-const DELETE_POST = gql`
-  mutation ($id: ID!) {
-    deletePost(id: $id)
-  }
-`;
+import { useGetPosts } from "./utils/hooks/useGetPosts";
+import { useCreatePost } from "./utils/hooks/useCreatePost";
+import { useUpdatePost } from "./utils/hooks/useUpdatePost";
+import { useDeletePost } from "./utils/hooks/useDeletePost";
 
 const client = new ApolloClient({
   uri: "https://graphqlzero.almansi.me/api",
   cache: new InMemoryCache(),
 });
-
-//not needed since we're importing type from ./__generated__/graphql
-// type Post = {
-//   id: number;
-//   title: string;
-//   body: string;
-// };
 
 export const PostItem = (post: Post) => (
   <div className="bg-white rounded-md px-2 py-1 mt-4">
@@ -89,43 +33,20 @@ export const Main = () => {
   const [showUpdateSuccess, setShowUpdateSuccess] = useState<boolean>(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState<boolean>(false);
 
-  const { loading, error, data } = useQuery(GET_POSTS, {
-    variables: {
-      //all these could be a custom hook in ./utils
-      //variables should be parsed
-      //page must be controled by user.
-      //get only 10 results
-      options: {
-        paginate: {
-          page: 1,
-          limit: 10,
-        },
-        //sort desc order by id
-        sort: {
-          field: "id",
-          order: "DESC",
-        },
-      },
-    },
-  });
+  const { loading, error, data } = useGetPosts({ page: 1 });
 
-  const [
+  const {
     createPost,
-    {
-      data: create_post_response,
-      loading: create_post_loading,
-      error: create_post_error,
-    },
-  ] = useMutation(CREATE_POST);
+    data: create_post_response,
+    loading: create_post_loading,
+    error: create_post_error,
+  } = useCreatePost();
 
-  const [
+  const {
     updatePost,
-    {
-      //data: update_post_response,
-      loading: update_post_loading,
-      error: update_post_error,
-    },
-  ] = useMutation(UPDATE_POST, {
+    loading: update_post_loading,
+    error: update_post_error,
+  } = useUpdatePost({
     onCompleted: () => {
       setShowUpdateSuccess(true);
       setTimeout(() => {
@@ -134,14 +55,11 @@ export const Main = () => {
     },
   });
 
-  const [
+  const {
     deletePost,
-    {
-      //data: delete_post_response,
-      loading: delete_post_loading,
-      error: delete_post_error,
-    },
-  ] = useMutation(DELETE_POST, {
+    loading: delete_post_loading,
+    error: delete_post_error,
+  } = useDeletePost({
     onCompleted: () => {
       setShowDeleteSuccess(true);
       setTimeout(() => {
@@ -152,9 +70,6 @@ export const Main = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
-
-  // if (update_post_error) alert("Error: couldn't update post. Try again later");
-  // if (update_post_response?.updatePost) alert("Post successfully updated ✅");
 
   return (
     <div className="flex flex-col h-screen">
@@ -201,17 +116,12 @@ export const Main = () => {
               disabled={create_post_loading}
               className={`bg-white text-dark-body text-sm px-4 py-2 border-light-body border-2 border-solid rounded-xl
               ${create_post_loading && "opacity-30"}`}
-              onClick={() => {
-                //should be a function appart.
+              onClick={() =>
                 createPost({
-                  variables: {
-                    input: {
-                      title: "A Very Captivating Post Title",
-                      body: "Some interesting content.",
-                    },
-                  },
-                });
-              }}
+                  title: "A Very Captivating Post Title",
+                  body: "Some interesting content.",
+                })
+              }
             >
               Create a new post
             </button>
@@ -222,15 +132,7 @@ export const Main = () => {
               className={`bg-white text-dark-body text-sm px-4 py-2 border-light-body border-2 border-solid rounded-xl
               ${update_post_loading && "opacity-30"}`}
               onClick={() => {
-                //should be a function appart.
-                updatePost({
-                  variables: {
-                    id: "1",
-                    input: {
-                      body: "Some interesting content.",
-                    },
-                  },
-                });
+                updatePost({ id: 1, body: "Some updated content." });
               }}
             >
               Update post
@@ -242,11 +144,7 @@ export const Main = () => {
               className={`bg-white text-dark-body text-sm px-4 py-2 border-light-body border-2 border-solid rounded-xl
                ${delete_post_loading && "opacity-30"}`}
               onClick={() => {
-                deletePost({
-                  variables: {
-                    id: "101",
-                  },
-                });
+                deletePost({ id: 1 });
               }}
             >
               Delete post
