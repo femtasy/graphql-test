@@ -33,8 +33,10 @@ export const Main = () => {
   const [showUpdateSuccess, setShowUpdateSuccess] = useState<boolean>(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState<boolean>(false);
 
+  //get post with pagination, pagination should be dynamic and controlled by the user
   const { loading, error, data } = useGetPosts({ page: 1 });
 
+  //create a new post call
   const {
     createPost,
     data: create_post_response,
@@ -42,6 +44,7 @@ export const Main = () => {
     error: create_post_error,
   } = useCreatePost();
 
+  //update post call
   const {
     updatePost,
     loading: update_post_loading,
@@ -55,6 +58,7 @@ export const Main = () => {
     },
   });
 
+  //delete post call
   const {
     deletePost,
     loading: delete_post_loading,
