@@ -3,10 +3,11 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 
-import { Main, GET_POSTS } from "./../App";
+import { Main } from "./../App";
+import { GET_POSTS } from "../utils/hooks/useGetPosts";
 
 test("loads and displays header", async () => {
-  const mocks: any = [
+  const mocks = [
     {
       request: {
         query: GET_POSTS,
